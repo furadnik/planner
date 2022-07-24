@@ -1,0 +1,5 @@
+<h1>{{ object.name }}</h1>
+{% if object.daterangeevent %}
+    <p>{{ object.daterangeevent.min_date }}</p>
+    <p>{{ object.daterangeevent.max_date }}</p>
+{% endif %}
