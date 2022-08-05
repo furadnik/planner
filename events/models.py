@@ -29,16 +29,36 @@ class Event(models.Model):
     def get_absolute_url(self):
         return reverse("events:view", kwargs={"pk": self.id})
 
+    def __str__(self):
+        return f"{self.name} ({self.mode})"
+
 
 class EventUser(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)
-    display_name = models.fields.DateField()
+    display_name = models.fields.CharField(max_length=180)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.display_name
+
+    def get_absolute_url(self):
+        return self.event.get_absolute_url()
 
 
 class Choice(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)
-    user = models.ForeignKey(EventUser, on_delete=models.CASCADE)
+    user = models.ManyToManyField(EventUser)
     dt_from = models.fields.DateTimeField()
     dt_to = models.fields.DateTimeField()
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
+
+    def __str__(self):
+        e_type = self.event.mode
+
+        if e_type == Modes.DTCHOICE:
+            return f"{self.dt_from} -- {self.dt_to}"
+        elif e_type == Modes.DATECHOICE:
+            return f"{self.dt_from.date()} -- {self.dt_to.date()}"
+
+        return str(self.dt_from.date())

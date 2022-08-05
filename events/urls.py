@@ -15,10 +15,15 @@ Including another URLconf
 """
 from django.urls import path
 
-from .views import EventCreateView, EventDetailView
+from .views import (EventCreateView, EventDetailView, EventEditView,
+                    FieldsEditView, UserAnswerEditView, add_user)
 
 app_name = "events"
 urlpatterns = [
-    path("create/date_choice", EventCreateView.as_view(), name="create_date_choice"),
+    path("create", EventCreateView.as_view(), name="create"),
     path('view/<str:pk>/', EventDetailView.as_view(), name="view"),
+    path('edit/<str:pk>/', EventEditView.as_view(), name="edit"),
+    path('fields/<str:pk>/', FieldsEditView.as_view(), name="fields"),
+    path('add_user/<str:pk>/', add_user, name="edit_answer_user_add"),
+    path('edit_answer/<str:pk>', UserAnswerEditView.as_view(), name="edit_answer"),
 ]

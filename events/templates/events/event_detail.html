@@ -1,5 +1,27 @@
 <h1>{{ object.name }}</h1>
-{% if object.daterangeevent %}
-    <p>{{ object.daterangeevent.min_date }}</p>
-    <p>{{ object.daterangeevent.max_date }}</p>
-{% endif %}
+{% if request.user.is_authenticated and request.user == object.creator %}
+<a href="{% url 'events:fields' pk=object.id %}">Edit event answers.</a>
+{% endif %} 
+
+<ul>
+{% for choice in object.choice_set.all %}
+<li>{{  choice }}: {{ choice.user.count }}</li>
+{% endfor %}
+</ul>
+
+<h2>Answerers</h2>
+<form action="{% url 'events:edit_answer_user_add' pk=object.id %}" method="post" accept-charset="utf-8">
+    {% csrf_token %}
+    New answer for name: <input type="text" value="" name="name" />
+   <input type="submit" value="Start new answer"/> 
+</form>
+<ul>
+{% for user in object.eventuser_set.all %}
+<li>
+    {{  user.display_name }}: {{ user.choice_set.count }}
+    {% if user.user is None or  request.user.is_authenticated and user.user == request.user  %}
+    <a href="{% url 'events:edit_answer' pk=user.id %}" target="_blank">Edit</a>
+    {% endif %}
+</li>
+{% endfor %}
+</ul>
