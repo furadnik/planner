@@ -6,7 +6,7 @@ from .views import (ChoicesView, EventCreateView, EventDetailView,
 app_name = "events"
 urlpatterns = [
     path("create", EventCreateView.as_view(), name="create"),
-    path("<str:pk>/view", EventDetailView.as_view(), name="view"),
+    path("<str:pk>/", EventDetailView.as_view(), name="view"),
     path("<str:pk>/edit", EventEditView.as_view(), name="edit"),
     path("<str:pk>/choices", ChoicesView.as_view(), name="choices"),
     path("<str:pk>/add_user", add_user, name="user"),

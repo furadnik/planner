@@ -22,6 +22,7 @@ class Event(models.Model):
 
     objects = InheritanceManager()
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     name = models.fields.CharField(max_length=150)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     mode = models.fields.CharField(max_length=30, choices=modes)
@@ -45,6 +46,9 @@ class Event(models.Model):
         for choice in self.choice_set.all():
             if choice.dt_from < dt_from or choice.dt_to > dt_to:
                 Choice.delete(choice)
+
+    class Meta:
+        ordering = ['-created_at']
 
 
 class EventUser(models.Model):

@@ -19,6 +19,7 @@ from events.views import EventsIndexView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', EventsIndexView.as_view()),
+    path('', EventsIndexView.as_view(), name="index"),
     path('events/', include("events.urls")),
+    path('accounts/', include("accounts.urls")),
 ]

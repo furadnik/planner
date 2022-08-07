@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="style.css">
+    <title>{% block title %}Index{% endblock %}</title>
+</head>
+
+<body>
+    <div id="sidebar">
+        <a href="{% url 'index' %}">Home</a> <br />
+    {% if request.user.is_authenticated %}
+        Welcome, {{ request.user.username }} <br />
+        <a href="{% url 'events:create' %}">New event</a>
+        <a href="{% url 'accounts:logout' %}">Logout</a>
+    {% else %}
+        <a href="{% url 'accounts:login' %}">Login</a>
+    {% endif %}
+    </div>
+
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

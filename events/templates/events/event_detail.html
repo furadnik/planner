@@ -1,3 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}
+Event - {{object.name}}
+{% endblock %}
+
+{% block content %}
 <h1>{{ object.name }}</h1>
 {% if request.user.is_authenticated and request.user == object.creator %}
 <a href="{% url 'events:choices' pk=object.id %}">Edit choices.</a>
@@ -25,3 +32,4 @@
 </li>
 {% endfor %}
 </ul>
+{% endblock %}
