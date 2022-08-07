@@ -32,6 +32,20 @@ class Event(models.Model):
     def __str__(self):
         return f"{self.name} ({self.mode})"
 
+    def get_date_range(self):
+        choices = self.choice_set.all()
+        if len(choices) == 0:
+            return None, None
+
+        first = min(choices, key=lambda x: x.dt_from)
+        last = max(choices, key=lambda x: x.dt_to)
+        return first.dt_from, last.dt_to
+
+    def set_date_range(self, dt_from, dt_to):
+        for choice in self.choice_set.all():
+            if choice.dt_from < dt_from or choice.dt_to > dt_to:
+                Choice.delete(choice)
+
 
 class EventUser(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)

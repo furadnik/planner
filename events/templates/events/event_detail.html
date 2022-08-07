@@ -1,6 +1,6 @@
 <h1>{{ object.name }}</h1>
 {% if request.user.is_authenticated and request.user == object.creator %}
-<a href="{% url 'events:fields' pk=object.id %}">Edit event answers.</a>
+<a href="{% url 'events:choices' pk=object.id %}">Edit choices.</a>
 {% endif %} 
 
 <ul>
@@ -10,7 +10,7 @@
 </ul>
 
 <h2>Answerers</h2>
-<form action="{% url 'events:edit_answer_user_add' pk=object.id %}" method="post" accept-charset="utf-8">
+<form action="{% url 'events:user' pk=object.id %}" method="post" accept-charset="utf-8">
     {% csrf_token %}
     New answer for name: <input type="text" value="" name="name" />
    <input type="submit" value="Start new answer"/> 
@@ -20,7 +20,7 @@
 <li>
     {{  user.display_name }}: {{ user.choice_set.count }}
     {% if user.user is None or  request.user.is_authenticated and user.user == request.user  %}
-    <a href="{% url 'events:edit_answer' pk=user.id %}" target="_blank">Edit</a>
+    <a href="{% url 'events:answer' pk=user.id %}">Edit</a>
     {% endif %}
 </li>
 {% endfor %}

@@ -1,8 +1,12 @@
+import datetime
+
 from django import forms
+from django.shortcuts import get_object_or_404
 
 from .models import Choice, Event, EventUser
 
 
+# DATE, DATETIME INPUT {{{
 class DatePickerInput(forms.DateInput):
     input_type = 'date'
 
@@ -12,45 +16,81 @@ class TimePickerInput(forms.TimeInput):
 
 
 class DateTimePickerInput(forms.DateTimeInput):
-    input_type = 'datetime'
+    input_type = 'datetime-local'
+# }}}
 
 
-class EventCreateForm(forms.ModelForm):  # {{{
+class EventForm(forms.ModelForm):
     class Meta:
         model = Event
         exclude = ["creator"]
 
-# }}}
 
+class ChoiceForm(forms.ModelForm):
 
-class EventFieldsForm(forms.Form):  # {{{
+    def save_with_event(self, id):
+        obj = self.save(commit=False)
+        obj.event_id = id
+        obj.save()
+        return obj
+
     class Meta:
-        model = Event
-
-# }}}
-
-
-class DRFieldsForm(EventFieldsForm):  # {{{
-    start = DatePickerInput()
-    end = DatePickerInput()
-
-# }}}
+        model = Choice
+        fields = ["dt_from", "dt_to"]
 
 
-class DCFieldsForm(EventFieldsForm):  # {{{
-    start = DatePickerInput()
-    end = DatePickerInput()
-
-# }}}
-
-
-class DTCFieldsForm(EventFieldsForm):  # {{{
-    start = DateTimePickerInput()
-    end = DateTimePickerInput()
-# }}}
+class DCForm(ChoiceForm):
+    """Choice form for date choice mode."""
+    class Meta(ChoiceForm.Meta):
+        widgets = {
+            'dt_from': DatePickerInput(),
+            'dt_to': DatePickerInput()
+        }
 
 
-class UserAnswerEditForm(forms.ModelForm):  # {{{
+class DTCForm(ChoiceForm):
+    """Choice form for date choice mode."""
+    class Meta(ChoiceForm.Meta):
+        widgets = {
+            'dt_from': DateTimePickerInput(),
+            'dt_to': DateTimePickerInput()
+        }
+
+
+class DRForm(DCForm):
+    """Choice form for date choice mode."""
+    class Meta(ChoiceForm.Meta):
+        widgets = {
+            'dt_from': DatePickerInput(),
+            'dt_to': DatePickerInput()
+        }
+
+    def save_with_event(self, id):
+        event = get_object_or_404(Event, id=id)
+
+        dt_from, dt_to = self.cleaned_data["dt_from"].replace(), self.cleaned_data["dt_to"].replace()
+
+        event.set_date_range(dt_from, dt_to)
+        curr_dt_from, curr_dt_to = event.get_date_range()
+        print(dt_from, dt_to)
+        if curr_dt_from is None:
+            curr_dt_from = dt_to + datetime.timedelta(days=1)
+            curr_dt_to = curr_dt_from
+        print(curr_dt_from, curr_dt_to)
+
+        date = dt_from
+        while date < curr_dt_from:
+            Choice(event=event, dt_from=date, dt_to=date).save()
+            date += datetime.timedelta(days=1)
+
+        date = curr_dt_to
+        while date < dt_to:
+            date += datetime.timedelta(days=1)
+            print(date)
+            Choice(event=event, dt_from=date, dt_to=date).save()
+
+
+class UserAnswerForm(forms.ModelForm):  # {{{
     choice_set = forms.ModelMultipleChoiceField(
         widget=forms.CheckboxSelectMultiple,
         queryset=Choice.objects.none(),
@@ -72,4 +112,5 @@ class UserAnswerEditForm(forms.ModelForm):  # {{{
         # Explicitly save the altered choice set.
         instance.choice_set.set(self.cleaned_data['choice_set'])
 
-        return instance  # }}}
+        return instance
+# }}}
