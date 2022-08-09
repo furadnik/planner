@@ -14,7 +14,7 @@ from .models import Choice, Event, EventUser
 class EventsIndexView(ListView):
     model = Event
     paginate = 30
-    template_name = "events/index.html"
+    template_name = "index.html"
 
 
 class EventCreateView(CreateView):
@@ -37,12 +37,6 @@ class EventEditView(UpdateView):
     form_class = EventForm
     template_name = "events/event_form.html"
 
-    def form_valid(self, form):
-        obj = form.save(commit=False)
-        obj.creator = self.request.user
-        print(self.request.user.id)
-        obj.save()
-        return HttpResponseRedirect(reverse("events:view", kwargs={"pk": obj.id}))
 # }}}
 
 
