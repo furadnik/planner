@@ -35,7 +35,7 @@ class EventDetailView(DetailView):
 
 class EventEditView(UpdateView):
     form_class = EventForm
-    template_name = "events/event_form.html"
+    template_name = "events/event_edit_form.html"
 
 # }}}
 
@@ -108,6 +108,6 @@ def add_user(request, pk):
 
 class UserAnswerEditView(UpdateView):
     form_class = UserAnswerForm
-    template_name = "events/event_form.html"
+    template_name = "events/answer.html"
     model = EventUser
 # }}}
