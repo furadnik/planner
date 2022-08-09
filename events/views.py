@@ -1,8 +1,10 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
 from django.views.decorators.http import require_POST
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, DeletionMixin, UpdateView
+from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
 from .forms import (ChoiceForm, DCForm, DRForm, DTCForm, EventForm,
@@ -33,9 +35,16 @@ class EventDetailView(DetailView):
     model = Event
 
 
-class EventEditView(UpdateView):
+class EventEditView(LoginRequiredMixin, UpdateView):
     form_class = EventForm
     template_name = "events/event_edit_form.html"
+    model = Event
+
+    def get_object(self, *args, **kwargs):
+        obj = super().get_object(*args, **kwargs)
+        if obj.creator != self.request.user:
+            raise PermissionDenied()
+        return obj
 
 # }}}
 
@@ -47,10 +56,13 @@ MODES_CHOICES_FORMS = {
 }
 
 
-class ChoicesView(CreateView):
+class ChoicesView(CreateView, LoginRequiredMixin, UserPassesTestMixin):
     form_class = ChoiceForm
     template_name = "events/choices.html"
     model = Choice
+
+    def test_func(self):
+        return self.request.user == self.event.creator
 
     def get_event(self, pk):
         self.event = get_object_or_404(Event, id=pk)
@@ -64,20 +76,21 @@ class ChoicesView(CreateView):
         context['event'] = self.event
         return context
 
-    def get(self, request, pk, *args, **kwargs):
+    def dispatch(self, request, pk, *args, **kwargs):
         self.get_event(pk)
-        return super().get(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
-    def post(self, request, pk, *args, **kwargs):
-        self.get_event(pk)
+    def post(self, request, *args, **kwargs):
         if "_method" in request.POST.keys() and request.POST["_method"] == "delete":
-            return self.delete(request, pk, *args, **kwargs)
+            return self.delete(request, *args, **kwargs)
         super().post(request, *args, **kwargs)
         return HttpResponseRedirect(self.get_return_url())
 
-    def delete(self, request, pk, *args, **kwargs):
+    def delete(self, request, *args, **kwargs):
         self.success_url = self.event.get_absolute_url()
-        choice = get_object_or_404(Choice, id=request.POST["choice_id"])
+        choice = get_object_or_404(
+            Choice, id=request.POST["choice_id"], event=self.event
+        )
         choice.delete()
 
     def get_return_url(self):
