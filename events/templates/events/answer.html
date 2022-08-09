@@ -1,6 +1,7 @@
-{% block title %}Create Event{% endblock %}
+{% block title %}Event{% endblock %}
 
 {% block content %}
+<h1>Answer</h1>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
