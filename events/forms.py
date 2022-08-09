@@ -20,12 +20,14 @@ class DateTimePickerInput(forms.DateTimeInput):
 # }}}
 
 
-class EventForm(forms.ModelForm):
+class EventForm(forms.ModelForm):  # {{{
     class Meta:
         model = Event
         exclude = ["creator"]
+# }}}
 
 
+# Choices forms {{{
 class ChoiceForm(forms.ModelForm):
 
     def save_with_event(self, id):
@@ -88,6 +90,7 @@ class DRForm(DCForm):
             date += datetime.timedelta(days=1)
             print(date)
             Choice(event=event, dt_from=date, dt_to=date).save()
+# }}}
 
 
 class UserAnswerForm(forms.ModelForm):  # {{{

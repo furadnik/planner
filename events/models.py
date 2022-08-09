@@ -27,6 +27,10 @@ class Event(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     mode = models.fields.CharField(max_length=30, choices=modes)
 
+    @property
+    def choices_single_editable(self) -> bool:
+        return not self.mode == str(Modes.DATERANGE)
+
     def get_absolute_url(self):
         return reverse("events:view", kwargs={"pk": self.id})
 

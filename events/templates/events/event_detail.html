@@ -19,7 +19,7 @@ Event - {{object.name}}
 <h2>Answerers</h2>
 <form action="{% url 'events:user' pk=object.id %}" method="post" accept-charset="utf-8">
     {% csrf_token %}
-    New answer for name: <input type="text" value="" name="name" />
+    New answer for name: <input type="text" value="{% if user.is_authenticated %}{% if user.first_name != "" %}{{user.first_name}} {{user.last_name}}{% else %}{{user.username}}{% endif %}{% endif %}" name="name" />
    <input type="submit" value="Start new answer"/> 
 </form>
 <ul>

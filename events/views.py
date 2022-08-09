@@ -1,9 +1,8 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, reverse
-from django.views import View
 from django.views.decorators.http import require_POST
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, DeletionMixin, UpdateView
 from django.views.generic.list import ListView
 
 from .forms import (ChoiceForm, DCForm, DRForm, DTCForm, EventForm,
@@ -56,29 +55,45 @@ MODES_CHOICES_FORMS = {
 
 class ChoicesView(CreateView):
     form_class = ChoiceForm
-    template_name = "events/event_form.html"
+    template_name = "events/choices.html"
     model = Choice
 
-    def set_form_class(self, pk):
-        event = get_object_or_404(Event, id=pk)
+    def get_event(self, pk):
+        self.event = get_object_or_404(Event, id=pk)
         try:
-            self.form_class = MODES_CHOICES_FORMS[event.mode]
-            print(self.form_class)
+            self.form_class = MODES_CHOICES_FORMS[self.event.mode]
         except KeyError:
             pass
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['event'] = self.event
+        return context
+
     def get(self, request, pk, *args, **kwargs):
-        self.set_form_class(pk)
+        self.get_event(pk)
         return super().get(request, *args, **kwargs)
 
     def post(self, request, pk, *args, **kwargs):
-        self.set_form_class(pk)
-        self.pk = pk
-        return super().post(request, *args, **kwargs)
+        self.get_event(pk)
+        if "_method" in request.POST.keys() and request.POST["_method"] == "delete":
+            return self.delete(request, pk, *args, **kwargs)
+        super().post(request, *args, **kwargs)
+        return HttpResponseRedirect(self.get_return_url())
+
+    def delete(self, request, pk, *args, **kwargs):
+        self.success_url = self.event.get_absolute_url()
+        choice = get_object_or_404(Choice, id=request.POST["choice_id"])
+        choice.delete()
+
+    def get_return_url(self):
+        if self.event.choices_single_editable:
+            return reverse("events:choices", kwargs={"pk": self.event.id})
+        return self.event.get_absolute_url()
 
     def form_valid(self, form):
-        form.save_with_event(self.pk)
-        return HttpResponseRedirect(reverse("events:view", kwargs={"pk": self.pk}))
+        form.save_with_event(self.event.id)
+        return HttpResponseRedirect(self.event.get_absolute_url())
 
 # ADD USER {{{
 
