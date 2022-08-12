@@ -74,11 +74,9 @@ class DRForm(DCForm):
 
         event.set_date_range(dt_from, dt_to)
         curr_dt_from, curr_dt_to = event.get_date_range()
-        print(dt_from, dt_to)
         if curr_dt_from is None:
             curr_dt_from = dt_to + datetime.timedelta(days=1)
             curr_dt_to = curr_dt_from
-        print(curr_dt_from, curr_dt_to)
 
         date = dt_from
         while date < curr_dt_from:
@@ -88,7 +86,6 @@ class DRForm(DCForm):
         date = curr_dt_to
         while date < dt_to:
             date += datetime.timedelta(days=1)
-            print(date)
             Choice(event=event, dt_from=date, dt_to=date).save()
 # }}}
 

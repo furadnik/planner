@@ -19,14 +19,13 @@ class EventsIndexView(ListView):
     template_name = "index.html"
 
 
-class EventCreateView(CreateView):
+class EventCreateView(LoginRequiredMixin, CreateView):
     form_class = EventForm
     template_name = "events/event_form.html"
 
     def form_valid(self, form):
         obj = form.save(commit=False)
         obj.creator = self.request.user
-        print(self.request.user.id)
         obj.save()
         return HttpResponseRedirect(reverse("events:view", kwargs={"pk": obj.id}))
 
@@ -56,7 +55,7 @@ MODES_CHOICES_FORMS = {
 }
 
 
-class ChoicesView(CreateView, LoginRequiredMixin, UserPassesTestMixin):
+class ChoicesView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = ChoiceForm
     template_name = "events/choices.html"
     model = Choice
@@ -66,10 +65,7 @@ class ChoicesView(CreateView, LoginRequiredMixin, UserPassesTestMixin):
 
     def get_event(self, pk):
         self.event = get_object_or_404(Event, id=pk)
-        try:
-            self.form_class = MODES_CHOICES_FORMS[self.event.mode]
-        except KeyError:
-            pass
+        self.form_class = MODES_CHOICES_FORMS[self.event.mode]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -87,11 +83,11 @@ class ChoicesView(CreateView, LoginRequiredMixin, UserPassesTestMixin):
         return HttpResponseRedirect(self.get_return_url())
 
     def delete(self, request, *args, **kwargs):
-        self.success_url = self.event.get_absolute_url()
         choice = get_object_or_404(
             Choice, id=request.POST["choice_id"], event=self.event
         )
         choice.delete()
+        return HttpResponseRedirect(self.event.get_absolute_url())
 
     def get_return_url(self):
         if self.event.choices_single_editable:

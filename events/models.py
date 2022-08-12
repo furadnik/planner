@@ -3,7 +3,6 @@ import uuid
 from django.contrib.auth.models import User
 from django.db import models
 from django.shortcuts import reverse
-from model_utils.managers import InheritanceManager
 
 
 class Modes(models.TextChoices):
@@ -20,7 +19,6 @@ class Event(models.Model):
         (Modes.DTCHOICE, "Date-Time Choice")
     )
 
-    objects = InheritanceManager()
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.fields.CharField(max_length=150)
@@ -34,7 +32,7 @@ class Event(models.Model):
     def get_absolute_url(self):
         return reverse("events:view", kwargs={"pk": self.id})
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return f"{self.name} ({self.mode})"
 
     def get_date_range(self):
@@ -61,10 +59,10 @@ class EventUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return self.display_name
 
-    def get_absolute_url(self):
+    def get_absolute_url(self):  # pragma: no cover
         return self.event.get_absolute_url()
 
 
@@ -75,7 +73,7 @@ class Choice(models.Model):
     dt_to = models.fields.DateTimeField()
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         e_type = self.event.mode
 
         if e_type == Modes.DTCHOICE:
