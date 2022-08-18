@@ -1,0 +1,59 @@
+body {
+    accent-color: #00796b;
+    font-family: "Roboto Slab", Slab;
+    background: #eceff1;
+}
+
+#content {
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1100px;
+}
+
+h1 {
+    color: #00251a;
+}
+
+a {
+    color: #00796b;
+}
+
+a:hover {
+    color: #48a999;
+}
+
+.button_primary {
+    border-radius: 3px;
+    border: 1px solid #00796b;
+    color: #00796b;
+}
+
+#navbar {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1200px;
+    text-align: center;
+    overflow: hidden;
+}
+
+#navbar li {
+    list-style: none;
+    padding: 16px;
+    float: left;
+}
+
+table {
+    min-width: 300px;
+    margin: 18px;
+    border-spacing: 0px;
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+td {
+    border-right: 1px solid black;
+    border-top: 1px solid black;
+    text-align: center;
+    padding: 9px;
+}

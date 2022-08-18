@@ -10,17 +10,29 @@ Event - {{object.name}}
 <a href="{% url 'events:choices' pk=object.id %}">Edit choices.</a>
 {% endif %} 
 
-<ul>
-{% for choice in object.choice_set.all %}
-<li>{{  choice }}: {{ choice.user.count }}</li>
-{% endfor %}
-</ul>
+<div style="width: 100%; overflow: auto;">
+<table>
+    {% for choice in object.choice_set.all %}
+    <tr style="background-color:{{ choice.color }}">
+        <td>{{  choice }}</td>
+        <td>{{ choice.user.count }}</td>
+        <!-- {% for user in object.eventuser_set.all %} -->
+        <!--     <td style="min-width: 1em;align:center"> -->
+        <!--         {% if user in choice.user.all %} -->
+        <!--         ✓ -->
+        <!--         {% endif %} -->
+        <!--     </td> -->
+        <!-- {% endfor %} -->
+    </tr>
+    {% endfor %}
+</table>
+</div>
 
 <h2>Answerers</h2>
 <form action="{% url 'events:user' pk=object.id %}" method="post" accept-charset="utf-8">
     {% csrf_token %}
     New answer for name: <input type="text" value="{% if user.is_authenticated %}{% if user.first_name != "" %}{{user.first_name}} {{user.last_name}}{% else %}{{user.username}}{% endif %}{% endif %}" name="name" />
-   <input type="submit" value="Start new answer"/> 
+   <input type="submit" class="button_primary" value="Start new answer"/> 
 </form>
 <ul>
 {% for user in object.eventuser_set.all %}
