@@ -1,9 +1,40 @@
 {% block title %}Create Event{% endblock %}
 
 {% block content %}
+<h1>Event</h1>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Create">
 </form>
+
+<h2>Modes description</h2>
+
+<p>
+When creating an event, you are asked to select the mode of the event. You have
+several choices and they affect how users can answer. You can change the
+mode of the event later, but it is discouraged, because all the users will have
+to answer again.
+</p>
+<h3>Date Range</h3>
+
+<p>
+You select a <i>from</i> and a <i>to</i> date, and users can choose any number of days in
+between those dates when they can attend. Useful when you don't know at all
+when you want your event to take place, and you want to know when your guests
+can.
+</p>
+<h3>Date Choice</h3>
+
+<p>
+You add date ranges, and users need to select the ENTIRE DATE RANGES. Useful when
+you have several options of when you can have the event, and you want the users
+to choose one of them.
+</p>
+<h3>Date-time Choice</h3>
+
+<p>
+Much like <i>Date Choice</i>, but you can also specify the start and end time for
+each choice.
+</p>
 {% endblock %}
