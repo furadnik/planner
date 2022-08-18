@@ -19,11 +19,22 @@ class TestEvent(TestCase):
         self.event_url = f"/events/{self.event.id}/"
         self.client.login(username="lojza", password="password")
 
+    def test_get_event(self):
+        res = self.client.get(self.event_url)
+        self.assertEqual(res.status_code, 200)
+
     def test_event_create(self):
         response = self.client.post("/events/create", {"name": "foo", "mode": "DR"})
         self.assertEqual(response.status_code, 302)
         events = Event.objects.filter(name="foo", creator=self.user)
         self.assertTrue(events)
+
+    def test_event_render_with_choices_and_user_selections(self):
+        choice = Choice(event=self.event, dt_from=datetime.now(), dt_to=datetime.now())
+        choice.save()
+        choice.user.create(user=self.user, display_name="asdf", event=self.event).save()
+        res = self.client.get(self.event_url)
+        self.assertEqual(res.status_code, 200)
 
     def test_edit_unauth(self):
         self.client.logout()

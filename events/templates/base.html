@@ -1,28 +1,36 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <link rel="stylesheet" href="style.css">
-    <title>{% block title %}Index{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'main/style.css' %}" type="text/css" />
+    <meta name="author" content="Filip Úradník" />
+    <meta name="description" content="Plan events with other people." />
+    <meta name="keywords" content="events, planning" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Index{% endblock title %}</title>
 </head>
 
 <body>
-    <div id="sidebar">
-        <a href="{% url 'index' %}">Home</a> <br />
-    {% if request.user.is_authenticated %}
-        Welcome, {{ request.user.username }} <br />
-        <a href="{% url 'events:create' %}">New event</a>
+    <ul id="navbar">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        {% if request.user.is_authenticated %}
+        <li>Welcome, {{ request.user.username }}</li>
+        <li style="float:right"><a href="{% url 'accounts:logout' %}">Logout</a></li>
+        <li style="float:right"><a href="{% url 'events:create' %}">New event</a></li>
         {% if request.user.is_superuser %}
-        <a href="/admin/">Admin dashboard</a>
+        <li style="float:right"><a href="{% url 'admin:index' %}">Admin dashboard</a></li>
         {% endif %}
-        <a href="{% url 'accounts:logout' %}">Logout</a>
-    {% else %}
-        <a href="{% url 'accounts:login' %}">Login</a>
-        <a href="{% url 'accounts:register' %}">Register</a>
-    {% endif %}
-    </div>
 
+        {% else %}
+        <li>Not logged in.</li> 
+        <li style="float:right"><a href="{% url 'accounts:login' %}">Login</a></li>
+        <li style="float:right"><a href="{% url 'accounts:register' %}">Register</a></li>
+        {% endif %}
+    </ul>
     <div id="content">
-        {% block content %}{% endblock %}
+        {% block content %}{% endblock content %}
     </div>
 </body>
+
 </html>

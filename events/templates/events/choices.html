@@ -1,32 +1,29 @@
 {% extends "base.html" %}
-
-{% block title %}Edit choices: {{event.name}}{% endblock %}
-
+{% block title %}
+    Edit choices: {{ event.name }}
+{% endblock title %}
 {% block content %}
-
-<a href="{% url 'events:view' pk=event.id %}">Back to event</a>
-
-<h1>{{ event.name }}</h1>
-
-<form method="post" accept-charset="utf-8">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Save" />
-</form>
-
-<h3>Current choices</h3>
-{% for choice in event.choice_set.all %}
-<li>{{  choice }} ({{ choice.user.count }})
-{% if event.choices_single_editable %}
-<form method="post" accept-charset="utf-8">
-    {% csrf_token %}
-    <input type="hidden" value="delete" name="_method" />
-    <input type="hidden" value="{{choice.id}}" name="choice_id" />
-    <input type="submit" value="Delete"/>
-</form>
-{% endif %}
-</li>
-{% endfor %}
-</ul>
-
-{% endblock %}
+    <a href="{% url 'events:view' pk=event.id %}">Back to event</a>
+    <h1>{{ event.name }}</h1>
+    <form method="post" accept-charset="utf-8">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" class="button_primary" value="Save" />
+    </form>
+    <h3>Current choices</h3>
+    <ul>
+        {% for choice in event.choice_set.all %}
+            <li>
+                {{ choice }} ({{ choice.user.count }})
+                {% if event.choices_single_editable %}
+                    <form method="post" accept-charset="utf-8">
+                        {% csrf_token %}
+                        <input type="hidden" value="delete" name="_method" />
+                        <input type="hidden" value="{{ choice.id }}" name="choice_id" />
+                        <input type="submit" class="button_primary" value="Delete"/>
+                    </form>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock content %}
