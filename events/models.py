@@ -108,14 +108,13 @@ class Choice(models.Model):
         return str(self.dt_from.date())
 
     @property
-    def color(self) -> None:
+    def color(self) -> str:
         """Get color of choice cell."""
         max_participants = self.event.max_number_of_participants
         if not max_participants:
             return "#ffffff"
 
-        max_color =  0x00ff00
-        base = 0xffffff
+        max_color = 255
         user_ratio = len(self.user.all()) / max_participants
-        my_color = int(max_color * user_ratio + base * (1 - user_ratio))
-        return "#" + hex(my_color)[2:].zfill(6)
+        my_color = int(max_color * (1 - user_ratio))
+        return f"rgb({my_color}, 255, {my_color})"
