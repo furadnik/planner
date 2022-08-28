@@ -12,17 +12,26 @@ Event - {{object.name}}
 
 <div style="width: 100%; overflow: auto;">
 <table>
+    <tr>
+        <td>Choice date/time</td>
+        <td># of answers</td>
+        {% for user in object.eventuser_set.all %}
+            <td style="min-width: 1em;align:center">
+                {{ user.display_name }}
+            </td>
+        {% endfor %}
+    </tr>
     {% for choice in object.choice_set.all %}
     <tr style="background-color:{{ choice.color }}">
         <td>{{  choice }}</td>
         <td>{{ choice.user.count }}</td>
-        <!-- {% for user in object.eventuser_set.all %} -->
-        <!--     <td style="min-width: 1em;align:center"> -->
-        <!--         {% if user in choice.user.all %} -->
-        <!--         ✓ -->
-        <!--         {% endif %} -->
-        <!--     </td> -->
-        <!-- {% endfor %} -->
+        {% for user in object.eventuser_set.all %}
+            <td style="min-width: 1em;align:center">
+                {% if user in choice.user.all %}
+                ✓
+                {% endif %}
+            </td>
+        {% endfor %}
     </tr>
     {% endfor %}
 </table>
