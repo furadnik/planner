@@ -9,7 +9,7 @@ cache:
 before_script:
   - pip install flake8 coverage
   - pip install -r requirements.txt
-  - python manage.py makemigrations
+  - python manage.py makemigrations events accounts
   - python manage.py migrate
 
 stages:
