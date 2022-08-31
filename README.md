@@ -45,8 +45,8 @@ account), and the answers you make under that account, only you can change.
 
 ## Modes
 
-When creating an event, you are asked to select the mode of the event. You have
-several choices and they affect how users can answer. You can change the
+When creating an event, you are asked to select the mode of the event. There are
+several modes to choose from and they affect how users can answer. You can change the
 mode of the event later, but it is discouraged, because all the users will have
 to answer again.
 
