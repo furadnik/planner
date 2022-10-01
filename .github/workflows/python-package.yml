@@ -1,0 +1,38 @@
+name: Python package
+
+on:
+  push:
+    branches-ignore: []
+  pull_request:
+    branches-ignore: []
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10"]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install flake8 pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Setup database
+      run: |
+        python manage.py makemigrations
+        python manage.py migrate
+        python manage.py check
+    - name: Test with unittest
+      run: |
+        python -m flake8 --max-line-length=120 **/*.py
+        python -m coverage run -m manage test
+        python -m coverage report --show-miss --fail-under=100
